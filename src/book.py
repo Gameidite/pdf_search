@@ -27,12 +27,11 @@ class book(object):
             for i in range(reader.getNumPages()):
                 page = reader.getPage(i)
                 self.book[i] = page.extractText()
-        print(self.book)
     
     def save_book(self, fp):
         import json
 
-        with open(fp, "w") as outfile:
+        with open(fp + ".json", "w+") as outfile:
             json.dump(self.book, outfile)
 
     def load_json(self, fp):
@@ -44,16 +43,35 @@ class book(object):
     def search_pages(self, text):
         pass
 
+def get_options_str(options):
+    options_str = ""
+    for i in options:
+        options_str += i +" "
+    return options_str
+
+
 if __name__ == "__main__":
     from tkinter import Tk
     from tkinter import filedialog
 
+    options = ["exit", "save book"]
     root = Tk()
     root.withdraw()
     
-    file_path = filedialog.askopenfilename()
+    file_path = filedialog.askopenfilename(filetypes=[("PDF", "*.pdf"), ("JSON", "*.json")])
     
+    file_name_ind = file_path.rfind("/")
+    file_type_ind = file_path.rfind(".")
+    file_name = file_path[file_name_ind+1:file_type_ind]
+
     bk = book(file_path)
-    exit_bool = False
-    while not exit_bool:
+    
+    while 1:
         
+        choice = input("Enter options("+ get_options_str(options) + "): ")
+        if choice.lower() == "exit":
+            break
+        if choice.lower() == "save book":
+            folder_path = filedialog.askdirectory()
+            
+            bk.save_book(folder_path + "/" + file_name)
